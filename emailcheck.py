@@ -24,12 +24,19 @@ while True:
     r = req.post(link,data=data)
     if ("We sent an") in r.text:
         rz = requests.get(f'https://emailsverified-django.herokuapp.com/api/yahoo/?username={reads.replace("@yahoo.com","")}').text
+        rg = requests.get(f'https://emailsverified-django.herokuapp.com/api/gmail/?username={reads.replace("@gmail.com","")}').text
         if "taken" in rz:
             print(f"{reads} : Linked : Taken[!]")
         elif "available" in rz:
             print(f"{reads} : Linked : Available[*]")
             with open("Linked.txt", "a") as Linked:
                 Linked.write(reads + "\n")
+        elif "available" in rg:
+            print(f"{reads} : Linked : Available[*]")
+            with open("Linked.txt", "a") as Linked:
+                Linked.write(reads + "\n")
+        elif "taken" in rg:
+            print(f"{reads} : Linked : Taken[!]")
         else:
             print(f"{reads} : Linked : Unknown[*]")
     elif ("Please wait a few minutes before you try again.") in r.text:
@@ -38,6 +45,9 @@ while True:
         print("You Send Many Requests")
     else:
         print(f"UnLinked : {reads}")
+
+
+
 
 
 
