@@ -10,6 +10,7 @@ print("""
     ███████╗██║ ╚═╝ ██║██║  ██║██║███████╗╚██████╗██║  ██║███████╗╚██████╗██║  ██╗
     ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝
 by @7snhacker""")
+print("instagram version")
 print("")
 print("click Ctrl Z to stop")
 sleep = float(input("sleep : "))
