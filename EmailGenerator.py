@@ -1,4 +1,4 @@
-mport string
+import string
 import random
 letters = string.ascii_lowercase
 print("yahoo"'\n'
