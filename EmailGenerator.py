@@ -1,4 +1,4 @@
-mport string
+import string
 import random
 letters = string.ascii_lowercase
 print("yahoo"'\n'
@@ -19,4 +19,5 @@ while li == 0:
         li = 1
         while True:
             print("Done (:")
+            print("Click Ctrl C to Exit")
             input("")
