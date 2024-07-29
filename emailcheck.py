@@ -25,13 +25,13 @@ while True:
     if ("We sent an") in r.text:
         rc = requests.get(f"https://api.skrapp.io/v3/open/verify?email={reads}").text
         if "Email is invalid" in rc:
-            print(f"{reads} : Linked : Taken[!]")
-            with open("LinkedTaken.txt", "a") as LinkedTaken:
-                LinkedTaken.write(reads + "\n")
-        elif "Email is valid" in rc:
             print(f"{reads} : Linked : Available[*]")
+            with open("LinkedAvailable.txt", "a") as LinkedAvailable:
+                LinkedAvailable.write(reads + "\n")
+        elif "Email is valid" in rc:
+            print(f"{reads} : Linked : Taken[!]")
             print(r.text)
-            with open("LinkedAvailable.txt", "a") as Linked:
+            with open("LinkedTaken.txt", "a") as Linked:
                 Linked.write(reads + "\n")
         else:
             print(f"{reads} : Linked : Unknown[*]")
