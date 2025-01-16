@@ -2,141 +2,174 @@ import requests
 import time
 from user_agent import generate_user_agent
 
-def check_instagram(email):
-    """Check the status of the email using Instagram API and third-party verification services."""
-    headers = {
-        'user-agent': generate_user_agent(),
-        'X-CSRFToken': "missing"
-    }
-    data = {"email_or_username": email}
-    url = "https://www.instagram.com/api/v1/web/accounts/account_recovery_send_ajax/"
-
-    try:
-        response = requests.post(url, headers=headers, data=data)
-        if "We sent an" in response.text:
-            return 'Instagram Sent', response.text
-        elif "Please wait a few minutes" in response.text:
-            return 'Instagram RateLimited', response.text
-        else:
-            return 'Instagram UnLinked', response.text
-    except requests.exceptions.RequestException as e:
-        return 'Instagram Error', str(e)
-
-def check_twitter(email):
-    """Check the status of the email using Twitter API and third-party verification services."""
-    # Simulate Twitter email check or recovery request
-    try:
-        url = f"https://twitter.com/account/begin_password_reset"
-        data = {'email': email}
-        headers = {'User-Agent': generate_user_agent()}
-        response = requests.post(url, headers=headers, data=data)
-        if "Please enter your email address" in response.text:
-            return 'Twitter Linked', response.text
-        else:
-            return 'Twitter UnLinked', response.text
-    except requests.exceptions.RequestException as e:
-        return 'Twitter Error', str(e)
-
-def check_facebook(email):
-    """Simulate Facebook account verification or email check."""
-    try:
-        url = f"https://www.facebook.com/recover/initiate/"
-        data = {'email': email}
-        headers = {'User-Agent': generate_user_agent()}
-        response = requests.post(url, headers=headers, data=data)
-        if "We sent you an email" in response.text:
-            return 'Facebook Sent', response.text
-        else:
-            return 'Facebook UnLinked', response.text
-    except requests.exceptions.RequestException as e:
-        return 'Facebook Error', str(e)
-
-def check_snapchat(email):
-    """Simulate Snapchat email recovery process."""
-    try:
-        url = f"https://accounts.snapchat.com/accounts/password_reset_request"
-        data = {'email': email}
-        headers = {'User-Agent': generate_user_agent()}
-        response = requests.post(url, headers=headers, data=data)
-        if "Snapchat sent you an email" in response.text:
-            return 'Snapchat Sent', response.text
-        else:
-            return 'Snapchat UnLinked', response.text
-    except requests.exceptions.RequestException as e:
-        return 'Snapchat Error', str(e)
-
-def verify_email_third_party(email):
-    """Verify the email using third-party service (e.g., Skrapp)."""
-    try:
-        api_url = f"https://api.skrapp.io/v3/open/verify?email={email}"
-        response = requests.get(api_url).json()
-        if response.get("status") == "Email is invalid":
-            return 'Invalid', response
-        elif response.get("status") == "Email is valid":
-            return 'Valid', response
-        else:
-            return 'Unknown', response
-    except requests.exceptions.RequestException as e:
-        return 'Error', str(e)
-
-def save_status(email, status):
-    """Save email status to appropriate files."""
-    if status == 'Linked - Taken':
-        with open("LinkedTaken.txt", "a") as file:
-            file.write(email + "\n")
-    elif status == 'Linked - Available':
-        with open("LinkedAvailable.txt", "a") as file:
-            file.write(email + "\n")
-    elif status == 'Linked - Unknown':
-        with open("LinkedUnknown.txt", "a") as file:
-            file.write(email + "\n")
-    elif status == 'UnLinked':
-        with open("UnLinkedEmails.txt", "a") as file:
-            file.write(email + "\n")
-    
-def main():
-    print("""
+# Banner
+print("""
     ███████╗███╗   ███╗ █████╗ ██╗██╗      ██████╗██╗  ██╗███████╗ ██████╗██╗  ██╗
     ██╔════╝████╗ ████║██╔══██╗██║██║     ██╔════╝██║  ██║██╔════╝██╔════╝██║ ██╔╝
-    █████╗  ██╔████╔██║███████║██║██║     ██║     ███████║█████╗  ██║     █████╔╝
-    ██╔══╝  ██║╚██╔╝██║██╔══██║██║██║     ██║     ██╔══██║██╔══╝  ██║     ██╔═██╗
+    █████╗  ██╔████╔██║███████║██║██║     ██║     ███████║█████╗  ██║     █████╔╝ 
+    ██╔══╝  ██║╚██╔╝██║██╔══██║██║██║     ██║     ██╔══██║██╔══╝  ██║     ██╔═██╗ 
     ███████╗██║ ╚═╝ ██║██║  ██║██║███████╗╚██████╗██║  ██║███████╗╚██████╗██║  ██╗
     ╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝ ╚═════╝╚═╝  ╚═╝
-    by @7snhacker
-    """)
+by @7snhacker
+""")
 
-    # Input sleep interval between requests
-    sleep_interval = float(input("Enter sleep interval (in seconds): "))
-    
-    with open("email.txt", "r") as lst:
-        for email in lst:
-            email = email.strip()
-            time.sleep(sleep_interval)
-            
-            # Check status on multiple platforms
-            platforms = [check_instagram, check_twitter, check_facebook, check_snapchat]
-            for platform in platforms:
-                status, response = platform(email)
-                print(f"{email} - {status}")
-                
-                if "Sent" in status:
-                    # If the platform sends a reset email or verification
-                    link_status, verification_response = verify_email_third_party(email)
-                    if link_status == 'Valid':
-                        print(f"{email} : Linked : Taken[!]")
-                        save_status(email, 'Linked - Taken')
-                    elif link_status == 'Invalid':
-                        print(f"{email} : Linked : Available[*]")
-                        save_status(email, 'Linked - Available')
-                    else:
-                        print(f"{email} : Linked : Unknown[*]")
-                        save_status(email, 'Linked - Unknown')
-                elif "RateLimited" in status:
-                    print("Rate limit reached. Please try again later.")
-                    time.sleep(5)
-                else:
-                    print(f"{email} : UnLinked")
-                    save_status(email, 'UnLinked')
-                
-if __name__ == "__main__":
-    main()
+# User input
+email_file = input("Enter the email file path: ")
+sleep_interval = float(input("Sleep interval (seconds): "))
+
+# Read emails from file
+try:
+    with open(email_file, "r") as f:
+        email_list = [line.strip() for line in f.readlines()]
+except FileNotFoundError:
+    print("Email file not found!")
+    exit()
+
+# Platforms to check
+platforms = [
+    {
+        "name": "Instagram",
+        "url": "https://www.instagram.com/api/v1/web/accounts/account_recovery_send_ajax/",
+        "headers": lambda: {
+            'user-agent': generate_user_agent(),
+            'X-CSRFToken': "missing"
+        },
+        "data": lambda email: {"email_or_username": email},
+        "success_message": "We sent an",
+        "rate_limit_message": "Please wait a few minutes before you try again."
+    },
+    {
+        "name": "TikTok",
+        "url": "https://www.tiktok.com/api/passport/web/send_code/",
+        "headers": lambda: {
+            'user-agent': generate_user_agent(),
+            'Content-Type': "application/json"
+        },
+        "data": lambda email: {"account": email, "type": "email"},
+        "success_message": "verification code has been sent",
+        "rate_limit_message": "Too many attempts"
+    },
+    {
+        "name": "Snapchat",
+        "url": "https://accounts.snapchat.com/accounts/validate_email",
+        "headers": lambda: {
+            'user-agent': generate_user_agent(),
+            'Content-Type': "application/x-www-form-urlencoded"
+        },
+        "data": lambda email: {"email": email},
+        "success_message": "Email is valid",
+        "rate_limit_message": "Too many requests"
+    },
+    {
+        "name": "Twitter",
+        "url": "https://api.twitter.com/i/account/login_verification",
+        "headers": lambda: {
+            'user-agent': generate_user_agent(),
+            'Content-Type': "application/json"
+        },
+        "data": lambda email: {"email": email},
+        "success_message": "An email has been sent",
+        "rate_limit_message": "Too many requests"
+    },
+    {
+        "name": "Netflix",
+        "url": "https://www.netflix.com/api/v2/account/validateemail",
+        "headers": lambda: {
+            'user-agent': generate_user_agent(),
+            'Content-Type': "application/json"
+        },
+        "data": lambda email: {"email": email},
+        "success_message": "valid email",
+        "rate_limit_message": "Too many requests"
+    },
+    {
+        "name": "Twitch",
+        "url": "https://passport.twitch.tv/password_resets",
+        "headers": lambda: {
+            'user-agent': generate_user_agent(),
+            'Content-Type': "application/json"
+        },
+        "data": lambda email: {"email": email},
+        "success_message": "password reset email sent",
+        "rate_limit_message": "Too many requests"
+    },
+    {
+        "name": "Amazon",
+        "url": "https://www.amazon.com/ap/forgotpassword",
+        "headers": lambda: {
+            'user-agent': generate_user_agent(),
+            'Content-Type': "application/json"
+        },
+        "data": lambda email: {"email": email},
+        "success_message": "password reset email sent",
+        "rate_limit_message": "Please wait"
+    },
+    {
+        "name": "Discord",
+        "url": "https://discord.com/api/v9/auth/forgot",
+        "headers": lambda: {
+            'user-agent': generate_user_agent(),
+            'Content-Type': "application/json"
+        },
+        "data": lambda email: {"email": email},
+        "success_message": "reset email sent",
+        "rate_limit_message": "You are being rate limited"
+    },
+    {
+        "name": "Facebook",
+        "url": "https://www.facebook.com/recover/initiate",
+        "headers": lambda: {
+            'user-agent': generate_user_agent(),
+            'Content-Type': "application/x-www-form-urlencoded"
+        },
+        "data": lambda email: {"email": email},
+        "success_message": "check your email",
+        "rate_limit_message": "Please slow down"
+    }
+]
+
+# Results
+results = {
+    "linked_available": [],
+    "linked_taken": [],
+    "unlinked": [],
+    "unknown": []
+}
+
+# Main loop
+for email in email_list:
+    for platform in platforms:
+        platform_name = platform["name"]
+        print(f"Checking {email} on {platform_name}...")
+        time.sleep(sleep_interval)
+
+        try:
+            response = requests.post(
+                platform["url"],
+                headers=platform["headers"](),
+                data=platform["data"](email)
+            )
+            if platform["success_message"] in response.text:
+                print(f"{email} is linked on {platform_name}.")
+                results["linked_available"].append(email)
+            elif platform["rate_limit_message"] in response.text:
+                print(f"Rate limit reached for {platform_name}. Retrying...")
+                time.sleep(10)
+            else:
+                print(f"{email} is unlinked on {platform_name}.")
+                results["unlinked"].append(email)
+        except Exception as e:
+            print(f"Error checking {email} on {platform_name}: {e}")
+            results["unknown"].append(email)
+
+# Save results to files
+with open("LinkedAvailable.txt", "w") as f:
+    f.writelines([email + "\n" for email in results["linked_available"]])
+with open("LinkedTaken.txt", "w") as f:
+    f.writelines([email + "\n" for email in results["linked_taken"]])
+with open("Unlinked.txt", "w") as f:
+    f.writelines([email + "\n" for email in results["unlinked"]])
+with open("Unknown.txt", "w") as f:
+    f.writelines([email + "\n" for email in results["unknown"]])
+
+print("Check completed. Results saved!")
