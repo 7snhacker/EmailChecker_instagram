@@ -184,6 +184,8 @@ while True:
         ).text
         if '"isAvailable":true' in response:
             print(f"Available email : {email}")
+            with open("Available.txt", "a") as UnknownAvailable:
+                UnknownAvailable.write(email + "\n")
         elif '"isAvailable":false' in response:
             print(f"NotAvailable email : {email}")
         else:
@@ -241,6 +243,8 @@ while True:
         ).text
         if '"isAvailable":true' in response:
             print(f"Available email : {email}")
+            with open("Available.txt", "a") as UnknownAvailable:
+                UnknownAvailable.write(email + "\n")
         elif '"isAvailable":false' in response:
             print(f"NotAvailable email : {email}")
         else:
@@ -299,8 +303,9 @@ while True:
         ).text
         if '"isAvailable":true' in response:
             print(f"Available email : {email}")
+            with open("Available.txt", "a") as UnknownAvailable:
+                UnknownAvailable.write(email + "\n")
         elif '"isAvailable":false' in response:
             print(f"NotAvailable email : {email}")
         else:
             print(f"Unknown email : {email}")
-
