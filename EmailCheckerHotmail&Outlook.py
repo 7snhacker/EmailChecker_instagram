@@ -65,7 +65,6 @@ while True:
         headers=headers,
         data=data,
     ).text
-    print(response)
     if '"We sent an email to' in response:
         print(f"Linked instagram : {email}")
         cookies = {
@@ -117,7 +116,6 @@ while True:
             headers=headers,
             json=json_data,
         ).text
-        print(response)
         if '"isAvailable":true' in response:
             print(f"Available email : {email}")
             with open("LinkedAvailable.txt", "a") as LinkedAvailable:
@@ -184,7 +182,6 @@ while True:
             headers=headers,
             json=json_data,
         ).text
-        print(response)
         if '"isAvailable":true' in response:
             print(f"Available email : {email}")
         elif '"isAvailable":false' in response:
@@ -242,7 +239,6 @@ while True:
             headers=headers,
             json=json_data,
         ).text
-        print(response)
         if '"isAvailable":true' in response:
             print(f"Available email : {email}")
         elif '"isAvailable":false' in response:
@@ -301,7 +297,6 @@ while True:
             headers=headers,
             json=json_data,
         ).text
-        print(response)
         if '"isAvailable":true' in response:
             print(f"Available email : {email}")
         elif '"isAvailable":false' in response:
