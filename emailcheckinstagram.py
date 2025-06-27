@@ -153,7 +153,7 @@ def worker(email_queue, proxies, lang_texts):
 
         if status == "Linked":
             print(lang_texts["linked"].format(email, username, followers, following))
-            save_result("LinkedAvailable.txt", f"{email} | User: {username} | Followers: {followers} | Following: {following}")
+            save_result("Linked.txt", f"{email} | User: {username} | Followers: {followers} | Following: {following}")
 
         elif status == "Unlinked":
             print(lang_texts["unlinked"].format(email))
@@ -211,7 +211,7 @@ def main():
             status, username, followers, following = get_instagram_account_data(email, proxies)
             if status == "Linked":
                 print(texts["linked"].format(email, username, followers, following))
-                save_result("LinkedAvailable.txt", f"{email} | User: {username} | Followers: {followers} | Following: {following}")
+                save_result("Linked.txt", f"{email} | User: {username} | Followers: {followers} | Following: {following}")
             elif status == "Unlinked":
                 print(texts["unlinked"].format(email))
                 save_result("Unlinked.txt", email)
