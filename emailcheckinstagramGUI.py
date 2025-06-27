@@ -264,7 +264,7 @@ class InstagramCheckerGUI:
             if status == "Linked":
                 msg = self.texts["linked"].format(email, username, followers, following)
                 self.log(msg)
-                self.save_result("LinkedAvailable.txt", f"{email} | User: {username} | Followers: {followers} | Following: {following}")
+                self.save_result("Linked.txt", f"{email} | User: {username} | Followers: {followers} | Following: {following}")
 
             elif status == "Unlinked":
                 msg = self.texts["unlinked"].format(email)
@@ -319,7 +319,7 @@ class InstagramCheckerGUI:
             if status == "Linked":
                 msg = self.texts["linked"].format(email, username, followers, following)
                 self.log(msg)
-                self.save_result("LinkedAvailable.txt", f"{email} | User: {username} | Followers: {followers} | Following: {following}")
+                self.save_result("Linked.txt", f"{email} | User: {username} | Followers: {followers} | Following: {following}")
 
             elif status == "Unlinked":
                 msg = self.texts["unlinked"].format(email)
